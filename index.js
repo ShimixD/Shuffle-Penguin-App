@@ -1,7 +1,7 @@
-const { app, dialog, BrowserWindow} = require("electron");
-const { autoUpdater } = require("electron-updater");
+const { app, session, BrowserWindow} = require("electron");
 const DiscordRPC = require("discord-rpc")
 const path = require("path");
+if (process.platform != "darwin") require("update-electron-app")({ repo: "ShimixD/Shuffle-Penguin-App" });
 // Flash deployment
 let pluginName;
 switch (process.platform) {
@@ -15,6 +15,7 @@ switch (process.platform) {
 }
 app.commandLine.appendSwitch('ppapi-flash-path', path.join(__dirname, pluginName));
 app.commandLine.appendSwitch('ppapi-flash-version', '32.0.0.303');
+app.commandLine.appendSwitch("disable-http-cache");
 // Discord RPC
 const clientId = '1065041861980475504'; DiscordRPC.register(clientId);
 const rpc = new DiscordRPC.Client({ transport: 'ipc' });
@@ -26,11 +27,6 @@ rpc.on('ready', () => {
 		largeImageKey: `large`, 
 	});
 });
-// Updates
-let updateAv = false;
-autoUpdater.on('update-downloaded', () => {
-    updateAv = true;
-});
 
 if (require("electron-squirrel-startup")) {
     app.quit();
@@ -38,7 +34,6 @@ if (require("electron-squirrel-startup")) {
 }
 app.on('window-all-closed', function() {
     rpc.destroy();
-    if (updateAv) autoUpdater.quitAndInstall();
     if (process.platform != 'darwin') app.quit();
 });
 
@@ -53,44 +48,14 @@ function createWindow() {
         webPreferences: {
             plugins: true,
             nodeIntegration: false,
-            webSecurity: false
+            webSecurity: false,
+			session: session.fromPartition("example", { cache: false })
         }
     })
-    mainWindow.webContents.session.clearHostResolverCache()
     mainWindow.loadURL("https://shufflepenguin.xyz")
-    rpc.login({ clientId }).catch(console.error);
+    rpc.login({ clientId }).catch(err => {console.log(err)});
 }
-
-autoUpdater.on('update-available', (updateInfo) => {
-	switch (process.platform) {
-	case 'win32':
-	    dialog.showMessageBox({
-		  type: "info",
-		  buttons: ["Ok"],
-		  title: "Update Available",
-		  message: "There is a new version available (v" + updateInfo.version + "). It will be installed when the app closes."
-	    });
-	    break
-	case 'darwin':
-	    dialog.showMessageBox({
-		  type: "info",
-		  buttons: ["Ok"],
-		  title: "Update Available",
-		  message: "There is a new version available (v" + updateInfo.version + "). Please go install it manually from the website."
-	    });
-	    break
-	case 'linux':
-	    dialog.showMessageBox({
-		  type: "info",
-		  buttons: ["Ok"],
-		  title: "Update Available",
-		  message: "There is a new version available (v" + updateInfo.version + "). Auto-update has not been tested on this OS, so if after relaunching app this appears again, please go install it manually."
-	    });
-	    break
-	}
-});
 
 app.whenReady().then(() => {
     createWindow()
-    autoUpdater.checkForUpdatesAndNotify();
 })

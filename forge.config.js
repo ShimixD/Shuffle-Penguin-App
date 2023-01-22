@@ -4,6 +4,18 @@ module.exports = {
     executableName: "shuffle-penguin"
   },
   rebuildConfig: {},
+  publishers: [
+    {
+      name: '@electron-forge/publisher-github',
+      config: {
+        repository: {
+          owner: 'ShimixD',
+          name: 'Shuffle-Penguin-App'
+        },
+        prerelease: true
+      }
+    }
+  ],
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
