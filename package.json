@@ -1,0 +1,39 @@
+{
+  "name": "shuffle-penguin",
+  "productName": "Shuffle Penguin",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "keywords": [],
+  "author": "Shuffle Penguin",
+  "license": "ISC",
+  "description": "Shuffle Penguin is a recreation of the game Club Penguin",
+  "build": {
+		"publish": [
+			{
+				"provider": "github",
+				"owner": "ShimixD",
+				"repo": ""
+			}
+		]
+	},
+  "dependencies": {
+    "@electron-forge/maker-dmg": "^6.0.4",
+    "discord-rpc": "^4.0.1",
+    "electron-squirrel-startup": "^1.0.0",
+    "electron-updater": "^5.3.0"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.4",
+    "@electron-forge/maker-deb": "^6.0.4",
+    "@electron-forge/maker-rpm": "^6.0.4",
+    "@electron-forge/maker-squirrel": "^6.0.4",
+    "@electron-forge/maker-zip": "^6.0.4",
+    "electron": "^11.1.1"
+  }
+}
